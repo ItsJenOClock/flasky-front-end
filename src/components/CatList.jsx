@@ -1,7 +1,7 @@
 import Cat from './Cat';
 import PropTypes from 'prop-types';
 
-const CatList = ({ catData, onPetCat }) => {
+const CatList = ({ catData, onPetCat, onUnregisterCat }) => {
   const catComponents = catData.map((cat) => {
     return (
       <Cat
@@ -12,6 +12,7 @@ const CatList = ({ catData, onPetCat }) => {
         caretaker={cat.caretaker}
         petCount={cat.petCount}
         onPetCat={onPetCat}
+        onUnregisterCat={onUnregisterCat}
         key={cat.id}
       />);
   });
@@ -35,6 +36,7 @@ CatList.propTypes = {
     petCount: PropTypes.number.isRequired,
   })).isRequired,
   onPetCat: PropTypes.func.isRequired,
+  onUnregisterCat: PropTypes.func.isRequired,
 };
 
 export default CatList;

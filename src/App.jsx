@@ -56,6 +56,12 @@ function App() {
     }));
   };
 
+  const handleUnregisterCat = (id) => {
+    setCatData(catData => catData.filter(cat => {
+      return cat.id !== id;
+    }));
+  };
+
   const calculateTotalPetCount = (catData) => {
     let total = 0;
     for (const cat of catData) {
@@ -78,7 +84,7 @@ function App() {
       <main>
         <h1> The Cat Corral </h1>
         <h2>Total Number of Pets Across all Cats: {totalPets}</h2>
-        <CatList catData={catData} onPetCat={handlePetCat}/>
+        <CatList catData={catData} onPetCat={handlePetCat} onUnregisterCat={handleUnregisterCat}/>
       </main>
     </>
   );

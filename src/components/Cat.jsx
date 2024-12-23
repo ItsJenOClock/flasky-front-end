@@ -8,9 +8,13 @@ const Cat = ({
   caretaker,
   petCount,
   onPetCat,
+  onUnregisterCat,
 }) => {
   const onPetClick = () => {
     onPetCat(id);
+  };
+  const onUnregisterClick = () => {
+    onUnregisterCat(id);
   };
 
   return (
@@ -22,6 +26,7 @@ const Cat = ({
       <h3># of Pets: {petCount}</h3>
       <p>🐈</p>
       <button onClick={onPetClick}>Pet Cat</button>
+      <button onClick={onUnregisterClick}>Unregister Cat</button>
     </li>
   );
 };
@@ -34,6 +39,7 @@ Cat.propTypes = {
   caretaker: PropTypes.string.isRequired,
   petCount: PropTypes.number.isRequired,
   onPetCat: PropTypes.func.isRequired,
+  onUnregisterCat: PropTypes.func.isRequired,
 };
 
 export default Cat;
