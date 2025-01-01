@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+// import { useState } from 'react';
 
 const Cat = ({
   id,
@@ -10,9 +11,15 @@ const Cat = ({
   onPetCat,
   onUnregisterCat,
 }) => {
+  // move this up to the main cat data
+  // const [petCount, setPetCount] = useState(0);
+
   const onPetClick = () => {
     onPetCat(id);
+    // setPetCount(petCount + 1);
+    // setPetCount(petCount => petCount + 1)
   };
+
   const onUnregisterClick = () => {
     onUnregisterCat(id);
   };

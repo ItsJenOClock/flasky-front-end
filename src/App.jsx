@@ -1,81 +1,117 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import CatList from './components/CatList';
+import axios from 'axios';
 
-const DATA = [
-  {
-    id: 1,
-    name: 'Ubik',
-    caretaker: 'Maria',
-    color: 'grey',
-    personality: 'wild child',
-    petCount: 0,
-  },
-  {
-    id: 2,
-    name: 'Pepper',
-    caretaker: 'Mark',
-    color: 'black',
-    personality: 'spicy',
-    petCount: 0,
-  },
-  {
-    id: 3,
-    name: 'Binx',
-    caretaker: 'Susan',
-    color: 'tuxedo',
-    personality: 'feral',
-    petCount: 0,
-  },
-  {
-    id: 4,
-    name: 'Luna',
-    caretaker: 'Jake',
-    color: 'white',
-    personality: 'cuddly',
-    petCount: 0,
-  }
-];
+const kbaseURL = 'http://localhost:5000';
+
+const convertFromApi = (apiCat) => {
+  const newCat = {
+    ...apiCat,
+    caretaker: apiCat.caretaker ? apiCat.caretaker : 'Unknown',
+    petCount: apiCat.pet_count
+  };
+
+  delete newCat.pet_count;
+  return newCat;
+};
+
+const getAllCatsApi = () => {
+  return axios.get(`${kbaseURL}/cats`)
+    .then( response => {
+      const apiCats = response.data;
+      const newCats = apiCats.map(convertFromApi);
+      return newCats;
+    })
+    .catch(error => {
+      console.log(error);
+    });
+};
+
+
+const petCatApi = (id) => {
+  return axios.patch(`${kbaseURL}/cats/${id}/pet`)
+    .then( response => {
+      const newCat = convertFromApi(response.data);
+      return newCat;
+    })
+    .catch( error => {
+      console.log(error);
+    });
+};
+
+const unregisterCatApi = (id) => {
+  return axios.delete(`${kbaseURL}/cats/${id}`)
+    .catch(error => {
+      console.log(error);
+    });
+};
+
 
 function App() {
-  const [catData, setCatData] = useState(DATA);
+  const [catData, setCatData] = useState([]);
+
+  const getAllCats = () => {
+    getAllCatsApi()
+      .then(cats => {
+        setCatData(cats);
+      });
+  };
+
+  useEffect(() => {
+    getAllCats();
+  }, []);
 
   const handlePetCat = (id) => {
-    // console.log(`we pet cat ${id}`);
+    // console.log(`we pet ${id} cat`);
+    // update the cat
+    petCatApi(id)
+      .then((apiCat) => {
+        setCatData(catData => catData.map(cat => {
+          if (cat.id === id) {
+            // update pet count
+            return apiCat;
+          } else {
+            // no change to this cat
+            return cat;
+          }
+        }));
+      });
 
-    // has to be different list, need to make a new outer object
-    // update cat
-    setCatData( catData => catData.map(cat => {
-      if (cat.id === id) {
-        // update pet count
-        return { ...cat, petCount: cat.petCount + 1 };
-      } else {
-        // no change
-        return cat;
-      }
-    }));
+    // const newCatData = catData.map(cat => {
+    //   if (cat.id === id) {
+    //     // update pet count
+    //     return { ...cat, petCount: cat.petCount + 1 };
+    //   } else {
+    //     // no change to this cat
+    //     return cat;
+    //   }
+    // });
+    // setCatData(newCatData);
   };
 
   const handleUnregisterCat = (id) => {
-    setCatData(catData => catData.filter(cat => {
-      return cat.id !== id;
-    }));
+    unregisterCatApi(id)
+      .then(() => {
+        setCatData(catData => catData.filter(cat => {
+          return cat.id !== id;
+        }));
+      });
   };
+
+  // const calculateTotalPetCount = (catData) => {
+  //   let total = 0;
+  //   for (const cat of catData) {
+  //     total += cat.petCount;
+  //   }
+  //   return total;
+  // };
 
   const calculateTotalPetCount = (catData) => {
-    let total = 0;
-    for (const cat of catData) {
-      total += cat.petCount;
-    }
-    return total;
+    return catData.reduce((total, cat) => {
+      return total + cat.petCount;
+    }, 0);
   };
-
-  // // using reduce
-  // const calculateTotalPetCount = (catData) => {
-  //   return catData.reduce((total, cat) => {
-  //     return total + cat.petCount;
-  //   }, 0);
-  // };
 
   const totalPets = calculateTotalPetCount(catData);
 
@@ -83,13 +119,16 @@ function App() {
     <>
       <main>
         <h1> The Cat Corral </h1>
-        <h2>Total Number of Pets Across all Cats: {totalPets}</h2>
-        <CatList catData={catData} onPetCat={handlePetCat} onUnregisterCat={handleUnregisterCat}/>
+        <h2>Total Number of Pets Across All Cats: {totalPets}</h2>
+        <CatList
+          catData={catData}
+          onPetCat={handlePetCat}
+          onUnregisterCat={handleUnregisterCat}
+        />
       </main>
     </>
+
   );
 }
 
 export default App;
-
-// export default App;
