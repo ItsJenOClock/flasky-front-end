@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import CatList from './components/CatList';
 import axios from 'axios';
+import NewCatFrom from './components/NewCatForm';
 
 const kbaseURL = 'http://localhost:5000';
 
@@ -120,6 +121,7 @@ function App() {
       <main>
         <h1> The Cat Corral </h1>
         <h2>Total Number of Pets Across All Cats: {totalPets}</h2>
+        <NewCatFrom />
         <CatList
           catData={catData}
           onPetCat={handlePetCat}
